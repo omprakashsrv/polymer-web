@@ -36,13 +36,19 @@ class MyView1 extends PageViewElement {
 <div>     
    <input accept=".pdf, application/pdf"
     id="fileChooser" @change="${(e) => this._onFileSelection(e)}" type="file" style="visibility:hidden; width:0px" />
-   <paper-button class="colored"
+   <paper-button 
     @click="${(e) => this.shadowRoot.getElementById('fileChooser').click()}" raised>Upload Pdf</paper-button>
     <div style="padding: 20px;">${this._documentId}</div>
     <div style="padding: 20px;">
      <div>Submit response</div>
      ${this._submissionResponse === undefined ? html`<div>No Submission</div>` : (this._submissionResponse.hasOwnProperty("error_code") ? html`<div>Failed Submission</div>` : html`<div>Success Submission</div>`)}
      <div>${JSON.stringify(this._submissionResponse)}</div>
+    <paper-button 
+    .hidden="${this._submissionResponse === undefined || !this._submissionResponse.hasOwnProperty("error_code")}"
+    @click="${(e) => {
+            this._submit();
+        }})}" raised>Retry Submission</paper-button>
+    
     </div>
 </div>
     `;
@@ -54,18 +60,23 @@ class MyView1 extends PageViewElement {
             let file = files[0];
             uploadPdf(file).then(function (res) {
                 this._documentId = res.data.id;
-                digioSubmit(this._documentId, "omprakashsrv@gmail.com")
-                    .then(function (res) {
-                        this._submissionResponse = res;
-                    }.bind(this))
-                    .catch(function (err) {
-                        this._submissionResponse = err;
-                    }.bind(this));
+                this._submit();
             }.bind(this)).catch((err) => {
                 console.log(err);
             });
         }
         this.shadowRoot.getElementById("fileChooser").value = null;
+    }
+
+    _submit() {
+        if (this._documentId === undefined) return;
+        digioSubmit(this._documentId, "omprakashsrv@gmail.com")
+            .then(function (res) {
+                this._submissionResponse = res;
+            }.bind(this))
+            .catch(function (err) {
+                this._submissionResponse = err;
+            }.bind(this));
     }
 }
 

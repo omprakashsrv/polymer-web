@@ -7,7 +7,7 @@ export const uploadPdf = function (file) {
         try {
             let formData = new FormData();
             formData.append('file', file);
-            let response = await sendRequest(uploadEndPoint, file);
+            let response = await sendRequest(uploadEndPoint, formData);
             resolve(response);
         } catch (e) {
             reject(e);
