@@ -1,13 +1,11 @@
 import {fetchRequest} from "./fetch";
 
-export const sendRequest = function sendRequest(url, body) {
+export const sendRequest = function (url, formData) {
     let headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    headers.append("Accept-Encoding", "gzip");
+    headers.append("Accept", "application/json");
     let request = {
         method: "POST",
-        headers: headers,
-        body: JSON.stringify(body)
+        body: formData
     };
     return fetchRequest(url, request);
 };
