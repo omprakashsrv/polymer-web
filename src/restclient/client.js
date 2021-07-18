@@ -4,12 +4,13 @@ import {sendRequest, sendUploadRequest} from "./request";
 const uploadEndPoint = baseUrl + "upload";
 const downloadEndPoint = baseUrl + "download";
 
-export const upload = function (file) {
+export const upload = function (file, identifier) {
     return new Promise(async (resolve, reject) => {
         try {
             let formData = new FormData();
             formData.append('file', file);
-            let response = await sendUploadRequest(uploadEndPoint, formData);
+            let response = await sendUploadRequest(uploadEndPoint + "?identifier=" + identifier,
+                formData);
             resolve(response);
         } catch (e) {
             reject(e);

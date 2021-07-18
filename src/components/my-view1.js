@@ -14,7 +14,7 @@ import {PageViewElement} from './page-view-element.js';
 import {SharedStyles} from './shared-styles.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-input/paper-input.js';
-import {upload, download} from '../restclient/client.js';
+import {download, upload} from '../restclient/client.js';
 import {digioSubmit} from '../clientsdk/digio';
 import {saveAs} from "./FileSaver";
 
@@ -28,6 +28,7 @@ class MyView1 extends PageViewElement {
     static get properties() {
         return {
             _documentId: {type: String},
+            _identifier: {type: String},
             _submissionResponse: {type: Object},
         }
     }
@@ -37,6 +38,9 @@ class MyView1 extends PageViewElement {
 <div>     
    <input accept=".pdf, application/pdf"
     id="fileChooser" @change="${(e) => this._onFileSelection(e)}" type="file" style="visibility:hidden; width:0px" />
+  <paper-input style="margin:10px;" @change="${(e) => {
+            this._identifier = e.target.value;
+        }}" label="Identifier"></paper-input>
    <paper-button 
     @click="${(e) => this.shadowRoot.getElementById('fileChooser').click()}" raised>Upload Pdf</paper-button>
     <div style="padding: 20px;">${this._documentId}</div>
@@ -64,7 +68,7 @@ class MyView1 extends PageViewElement {
         let files = this.shadowRoot.getElementById("fileChooser").files;
         if (files.length > 0) {
             let file = files[0];
-            upload(file).then(function (res) {
+            upload(file, this._identifier).then(function (res) {
                 this._documentId = res.data.id;
                 this._submit();
             }.bind(this)).catch((err) => {
