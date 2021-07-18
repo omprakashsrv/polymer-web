@@ -14,8 +14,9 @@ import {PageViewElement} from './page-view-element.js';
 import {SharedStyles} from './shared-styles.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-input/paper-input.js';
-import {uploadPdf} from '../restclient/client.js';
+import {upload, download} from '../restclient/client.js';
 import {digioSubmit} from '../clientsdk/digio';
+import {saveAs} from "./FileSaver";
 
 class MyView1 extends PageViewElement {
     static get styles() {
@@ -48,6 +49,11 @@ class MyView1 extends PageViewElement {
     @click="${(e) => {
             this._submit();
         }})}" raised>Retry Submission</paper-button>
+    <paper-button 
+    .hidden="${this._submissionResponse === undefined}"
+    @click="${(e) => {
+            this._download();
+        }})}" raised>Download</paper-button>
     
     </div>
 </div>
@@ -58,7 +64,7 @@ class MyView1 extends PageViewElement {
         let files = this.shadowRoot.getElementById("fileChooser").files;
         if (files.length > 0) {
             let file = files[0];
-            uploadPdf(file).then(function (res) {
+            upload(file).then(function (res) {
                 this._documentId = res.data.id;
                 this._submit();
             }.bind(this)).catch((err) => {
@@ -77,6 +83,14 @@ class MyView1 extends PageViewElement {
             .catch(function (err) {
                 this._submissionResponse = err;
             }.bind(this));
+    }
+
+    _download() {
+        download(this._documentId).then(function (res) {
+            saveAs(res, this._documentId + ".pdf");
+        }.bind(this)).catch((err) => {
+            console.log(err);
+        });
     }
 }
 

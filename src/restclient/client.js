@@ -1,13 +1,26 @@
 const baseUrl = "http://localhost:3000/";
-import {sendRequest} from "./request";
+import {sendRequest, sendUploadRequest} from "./request";
 
 const uploadEndPoint = baseUrl + "upload";
-export const uploadPdf = function (file) {
+const downloadEndPoint = baseUrl + "download";
+
+export const upload = function (file) {
     return new Promise(async (resolve, reject) => {
         try {
             let formData = new FormData();
             formData.append('file', file);
-            let response = await sendRequest(uploadEndPoint, formData);
+            let response = await sendUploadRequest(uploadEndPoint, formData);
+            resolve(response);
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+export const download = function (documentId) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let response = await sendRequest(downloadEndPoint + "?document_id=" + documentId);
             resolve(response);
         } catch (e) {
             reject(e);
